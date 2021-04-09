@@ -1,5 +1,10 @@
 const express = require('express')
-const { postQueue, getServiceLocation, deleteQueue } = require('../controllers')
+const {
+  postQueue,
+  getServiceLocation,
+  deleteQueue,
+  getQueue,
+} = require('../controllers')
 const { isAuthorize } = require('../middlewares')
 const router = express.Router()
 
@@ -26,7 +31,6 @@ router
     const id = req.body.id
     const duration = req.body.duration
 
-
     res.json({
       created: timer[id].created,
       timeleft: duration - (new Date().getTime() - timer[id].created) / 1000,
@@ -49,6 +53,10 @@ router.route('/service').get(getServiceLocation)
 
 router.use(isAuthorize)
 
-router.route('/queue').post(postQueue).delete(deleteQueue)
+router
+  .route('/queue/:serviceLocation?')
+  .post(postQueue)
+  .delete(deleteQueue)
+  .get(getQueue)
 
 module.exports = router
