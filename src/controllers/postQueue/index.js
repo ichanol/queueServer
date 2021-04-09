@@ -11,32 +11,36 @@ client.on('error', function (error) {
 })
 
 const postQueue = async (req, res) => {
+  let totalNumber
+  const response = { success: false, message: 'Service location not found' }
+
   const { serviceLocation } = req.body
-  const totalNumber = await HGET('location', serviceLocation)
-  const response = { success: false, message: 'service location not found' }
+
+  console.log('get location => ', serviceLocation)
+
+  if (serviceLocation) {
+    totalNumber = await HGET('location', serviceLocation)
+  }
 
   if (totalNumber) {
     let queueNumber
-    const isQueueExist = await LPOS(serviceLocation, req.fcmToken)
+    const currentQueue = await LPOS(serviceLocation, req.fcmToken)
 
-    if (!isQueueExist) {
-      queueNumber = await RPUSH(serviceLocation, req.fcmToken)
+    if ((await currentQueue) === null) {
+      const newQueue = await RPUSH(serviceLocation, req.fcmToken)
+      queueNumber = newQueue
     } else {
-      queueNumber = isQueueExist
+      queueNumber = currentQueue + 1
       response.exist = true
     }
     response.success = true
     response.queue = queueNumber
     response.queueStatus = 'IN_LINE'
-    response.message = `You're enqueue at ${serviceLocation}. You are number ${
-      queueNumber + 1
-    } in line.`
+    response.message = `You're enqueue at ${serviceLocation}. You are number ${queueNumber} in line.`
 
     if (queueNumber <= totalNumber) {
-      response.queueStatus = 'ACTIVE'
-      response.message = `Your turn to use the washing machine at ${serviceLocation}. You are number ${
-        queueNumber + 1
-      } in line.`
+      response.queueStatus = 'PREPARE'
+      response.message = `Your turn to use the washing machine at ${serviceLocation}. You are number ${queueNumber} in line.`
     }
     res.json(response)
     return

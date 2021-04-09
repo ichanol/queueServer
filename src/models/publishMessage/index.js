@@ -17,15 +17,11 @@ const publishMessage = async (serviceLocation, TYPE) => {
   )
 
   const date = new Date()
-
-  channel.publish(
-    serviceLocation,
-    key,
-    Buffer.from(
-      TYPE +
-        `--${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`,
-    ),
+  console.log(
+    `[PUBLISH] ${TYPE}@${serviceLocation} (${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()})`,
   )
+
+  channel.publish(serviceLocation, key, Buffer.from(TYPE))
 
   setTimeout(() => {
     connection.close()
