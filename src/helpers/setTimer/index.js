@@ -11,7 +11,7 @@ const setTimer = (serviceLocation, id, duration) => {
 
   timers[serviceLocation][id] = setTimeout(() => {
     console.log(id, ' timeout', duration)
-    delete timers[id]
+    delete timers[serviceLocation][id]
   }, duration * 1000)
 
   timers[serviceLocation][id].startTime = timeMillis
