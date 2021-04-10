@@ -1,6 +1,6 @@
 const timers = require('../timers')
 
-const setTimer = (serviceLocation, id, duration) => {
+const setTimer = (serviceLocation, id, duration, callback = () => {}) => {
   if (!timers[serviceLocation]) {
     timers[serviceLocation] = {}
   }
@@ -9,8 +9,9 @@ const setTimer = (serviceLocation, id, duration) => {
 
   const timeMillis = new Date().getTime()
 
-  timers[serviceLocation][id] = setTimeout(() => {
+  timers[serviceLocation][id] = setTimeout(async () => {
     console.log(id, ' timeout', duration)
+    callback()
     delete timers[serviceLocation][id]
   }, duration * 1000)
 

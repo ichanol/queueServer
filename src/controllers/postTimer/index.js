@@ -1,6 +1,7 @@
 const redis = require('redis')
 const { promisify } = require('util')
 const { setTimer } = require('../../helpers')
+const { sendPushNotification, directMessage } = require('../../models')
 
 const client = redis.createClient()
 const HGET = promisify(client.hget).bind(client)
@@ -27,12 +28,22 @@ const postTimer = async (req, res) => {
     let queueNumber
     const currentQueue = await LPOS(serviceLocation, req.fcmToken)
 
-    if ((await currentQueue) !== null) {
+    if (currentQueue !== null) {
       queueNumber = currentQueue + 1
     }
 
     if (queueNumber <= totalNumber) {
-      const startTime = setTimer(serviceLocation, req.fcmToken, 45)
+      const sendNotificationToUser = async () => {
+        await sendPushNotification(req.fcmToken, 'FINISH')
+        directMessage(req.fcmToken, 'FINISH')
+      }
+
+      const startTime = setTimer(
+        serviceLocation,
+        req.fcmToken,
+        20,
+        sendNotificationToUser,
+      )
 
       response.success = true
       response.queueStatus = 'ACTIVE'
@@ -41,7 +52,7 @@ const postTimer = async (req, res) => {
       response.startTime = startTime
     } else {
       res.status(401)
-      response.queueStatus = 'IN_LINE'
+      response.queueStatus = 'WAITING'
       response.message = `Easy. It's not your turn to use the washing machine at ${serviceLocation}. You are number ${queueNumber} in line.`
     }
     res.json(response)

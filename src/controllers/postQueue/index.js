@@ -21,25 +21,26 @@ const postQueue = async (req, res) => {
   }
 
   if (totalNumber) {
-    let queueNumber
     const currentQueue = await LPOS(serviceLocation, req.fcmToken)
 
-    if ((await currentQueue) === null) {
-      const newQueue = await RPUSH(serviceLocation, req.fcmToken)
-      queueNumber = newQueue
-    } else {
-      queueNumber = currentQueue + 1
+    if (currentQueue !== null) {
       response.exist = true
-    }
-    response.success = true
-    response.queue = queueNumber
-    response.queueStatus = 'IN_LINE'
-    response.message = `You're enqueue at ${serviceLocation}. You are number ${queueNumber} in line.`
+      response.message = 'Queue already exist'
+    } else {
+      const newQueue = await RPUSH(serviceLocation, req.fcmToken)
 
-    if (queueNumber <= totalNumber) {
-      response.queueStatus = 'PREPARE'
-      response.message = `Your turn to use the washing machine at ${serviceLocation}. You are number ${queueNumber} in line.`
+      response.queueStatus = 'WAITING'
+      response.message = `You're enqueue at ${serviceLocation}. You are number ${newQueue} in line.`
+      response.queue = newQueue
+      response.location = serviceLocation
+
+      if (newQueue <= totalNumber) {
+        response.queueStatus = 'PENDING'
+        response.message = `Your turn to use the washing machine at ${serviceLocation}. You are number ${newQueue} in line.`
+      }
     }
+
+    response.success = true
     res.json(response)
     return
   }

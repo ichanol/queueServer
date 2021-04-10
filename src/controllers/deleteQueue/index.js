@@ -19,10 +19,9 @@ const deleteQueue = async (req, res) => {
 
   if (totalNumber) {
     let remove = false
-
     const currentQueue = await LPOS(serviceLocation, req.fcmToken)
 
-    if (currentQueue >= 0) {
+    if (currentQueue !== null) {
       const isRemove = await LREM(serviceLocation, 0, req.fcmToken)
       remove = isRemove
     }
@@ -44,8 +43,8 @@ const deleteQueue = async (req, res) => {
       response.message =
         'Thank you. We hope your experience was awesome and we can’t wait to see you again soon.'
     } else {
-      response.message = 'Queue not found'
       res.status(404)
+      response.message = 'Queue not found'
     }
 
     res.json(response)
@@ -56,16 +55,3 @@ const deleteQueue = async (req, res) => {
 }
 
 module.exports = deleteQueue
-// response.success = true
-// response.queue = queueNumber
-// response.queueStatus = 'IN_LINE'
-// response.message = `You're enqueue at ${serviceLocation}. You are number ${
-//   queueNumber + 1
-// } in line.`
-
-// if (queueNumber <= totalNumber) {
-//   response.queueStatus = 'ACTIVE'
-//   response.message = `Your turn to use the washing machine at ${serviceLocation}. You are number ${
-//     queueNumber + 1
-//   } in line.`
-// }

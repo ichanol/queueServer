@@ -4,7 +4,6 @@ const {
   getServiceLocation,
   deleteQueue,
   getQueue,
-  getTimer,
   postTimer,
 } = require('../controllers')
 const { isAuthorize } = require('../middlewares')
@@ -12,7 +11,9 @@ const { isAuthorize } = require('../middlewares')
 const router = express.Router()
 
 router.use((req, res, next) => {
-  console.log(`@${new Date().toISOString()} => ${req.originalUrl}`)
+  console.log(
+    `@${new Date().toISOString()} => [${req.method}] ${req.originalUrl}`,
+  )
   next()
 })
 
@@ -20,7 +21,7 @@ router.route('/service').get(getServiceLocation)
 
 router.use(isAuthorize)
 
-router.route('/timer').get(getTimer).post(postTimer)
+router.route('/timer').post(postTimer)
 
 router
   .route('/queue/:serviceLocation?')
