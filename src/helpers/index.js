@@ -1,3 +1,5 @@
-const bookingApp = require('./bookingApp.json')
-
-module.exports = { bookingApp }
+module.exports = {
+  bookingApp: require('./bookingApp.json'),
+  timers: require('./timers'),
+  setTimer: require('./setTimer'),
+}
