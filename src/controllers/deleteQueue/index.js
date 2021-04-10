@@ -36,12 +36,10 @@ const deleteQueue = async (req, res) => {
           totalNumber,
         )
         sendPushNotification(nextQueue)
-        publishMessage(serviceLocation, 'QUEUE_UP')
       }
-      if (currentQueue + 1 > totalNumber) {
-        // publishMessage()
-        // send to all
-      }
+
+      publishMessage(serviceLocation, 'QUEUE_UP')
+
       response.success = true
       response.message =
         'Thank you. We hope your experience was awesome and we can’t wait to see you again soon.'
