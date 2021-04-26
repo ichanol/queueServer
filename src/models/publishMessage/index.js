@@ -5,8 +5,8 @@ const publishMessage = async (serviceLocation, TYPE) => {
     protocol: 'amqp',
     hostname: 'localhost',
     port: 5672,
-    username: 'guest',
-    password: 'guest',
+    username: 'express',
+    password: 'expresseiei',
     vhost: '/',
   })
   const key = `#.${serviceLocation}`

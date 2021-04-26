@@ -1,6 +1,7 @@
 const redis = require('redis')
 const { promisify } = require('util')
 const { publishMessage, sendPushNotification } = require('../../models')
+const { timers } = require('../../helpers')
 
 const client = redis.createClient()
 const HGET = promisify(client.hget).bind(client)
@@ -28,6 +29,7 @@ const deleteQueue = async (req, res) => {
 
     if (remove) {
       const queueListInLocation = await LRANGE(serviceLocation, 0, -1)
+      timers[serviceLocation][req.fcmToken] && delete timers[serviceLocation][req.fcmToken]
 
       if (currentQueue + 1 <= totalNumber) {
         const [nextQueue] = queueListInLocation.slice(

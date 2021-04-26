@@ -35,7 +35,7 @@ const postTimer = async (req, res) => {
     if (queueNumber <= totalNumber) {
       const sendNotificationToUser = async () => {
         await sendPushNotification(req.fcmToken, 'FINISH')
-        directMessage(req.fcmToken, 'FINISH')
+        directMessage(req.fcmToken, 'QUEUE_UP')
       }
 
       const startTime = setTimer(

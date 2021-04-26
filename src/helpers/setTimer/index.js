@@ -12,7 +12,7 @@ const setTimer = (serviceLocation, id, duration, callback = () => {}) => {
   timers[serviceLocation][id] = setTimeout(async () => {
     console.log(id, ' timeout', duration)
     callback()
-    delete timers[serviceLocation][id]
+    timers[serviceLocation][id].status = 'FINISHING'
   }, duration * 1000)
 
   timers[serviceLocation][id].startTime = timeMillis

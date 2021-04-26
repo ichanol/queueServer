@@ -43,7 +43,11 @@ const getQueue = async (req, res) => {
       response.message = `Your turn to use the washing machine at ${serviceLocation}. You are number ${queueNumber} in line.`
     }
 
-    if (timers[serviceLocation] && timers[serviceLocation][req.fcmToken]) {
+    if (
+      timers[serviceLocation] &&
+      timers[serviceLocation][req.fcmToken] &&
+      !timers[serviceLocation][req.fcmToken].status
+    ) {
       response.queueStatus = 'ACTIVE'
       response.message = `You're using washing machine at ${serviceLocation}.`
       response.startTime = timers[serviceLocation][req.fcmToken].startTime
@@ -52,6 +56,13 @@ const getQueue = async (req, res) => {
         (new Date().getTime() -
           timers[serviceLocation][req.fcmToken].startTime) /
           1000
+    } else if (
+      timers[serviceLocation] &&
+      timers[serviceLocation][req.fcmToken] &&
+      timers[serviceLocation][req.fcmToken].status
+    ) {
+      response.queueStatus = 'FINISHING'
+      response.message = `Please get your laundry then click finish.`
     }
 
     res.json(response)
